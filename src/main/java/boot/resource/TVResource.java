@@ -25,7 +25,7 @@ public class TVResource {
      * Add a RequestMapping and method to lookup your favorite show
      */
     @RequestMapping("/schedule/next/{title}")
-    public DeferredResult<Date> getNextAiringOfTitle(@PathVariable String title) {
+    public DeferredResult<ScheduleDTO> getNextAiringOfTitle(@PathVariable String title) {
         return tvService.nextOnAir(title);
     }
 
