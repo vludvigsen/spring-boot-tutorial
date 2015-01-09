@@ -17,7 +17,7 @@ public class TVService {
     }
 
     public ScheduleDTO[] getScheduledPrograms(String channel) {
-        return restTemplate.getForObject("http://www.svt.se/play4api/channel/{channel}/schedule", ScheduleDTO[].class, channel);
+        return restTemplate.getForObject("http://origin-www.svt.se/play4api/channel/{channel}/schedule", ScheduleDTO[].class, channel);
     }
 
 }
