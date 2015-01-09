@@ -11,7 +11,7 @@ public class TVService {
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    public Date nextOnAir(String showTitle) {
+    public ScheduleDTO nextOnAir(String showTitle) {
         // add logic to determine if the given show is on TV today
         return null;
     }
