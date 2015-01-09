@@ -1,23 +1,40 @@
 package boot.service;
 
 import boot.dto.ScheduleDTO;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.web.client.AsyncRestTemplate;
+import org.springframework.web.context.request.async.DeferredResult;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class TVService {
 
-    private RestTemplate restTemplate = new RestTemplate();
+    private AsyncRestTemplate restTemplate = new AsyncRestTemplate();
 
-    public Date nextOnAir(String showTitle) {
-        // add logic to determine if the given show is on TV today
-        return null;
+    public DeferredResult<Date> nextOnAir(String showTitle) {
+        final DeferredResult<Date> result = new DeferredResult<>();
+        final DeferredResult<ScheduleDTO[]> svt1 = getScheduledPrograms("svt1");
+        svt1.setResultHandler(svt1Result -> {
+            List<ScheduleDTO> svt1List = Arrays.asList((ScheduleDTO[]) svt1Result);
+            svt1List.stream().filter(program -> program.title.equalsIgnoreCase(showTitle))
+                    .findFirst()
+                    .ifPresent(program -> result.setResult(program.broadcastStartTime));
+        });
+        return result;
     }
 
-    public ScheduleDTO[] getScheduledPrograms(String channel) {
-        return restTemplate.getForObject("http://www.svt.se/play4api/channel/{channel}/schedule", ScheduleDTO[].class, channel);
+    public DeferredResult<ScheduleDTO[]> getScheduledPrograms(String channel) {
+        final DeferredResult<ScheduleDTO[]> deferredResult = new DeferredResult<>();
+        final ListenableFuture<ResponseEntity<ScheduleDTO[]>> future = restTemplate.getForEntity("http://www.svt.se/play4api/channel/{channel}/schedule", ScheduleDTO[].class, channel);
+        future.addCallback(
+                result -> deferredResult.setResult(result.getBody()),
+                exception -> deferredResult.setErrorResult(exception.getMessage()));
+        return deferredResult;
     }
 
 }
