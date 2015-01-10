@@ -56,7 +56,7 @@ public class TVService {
 
         // Request the data from SVT API as a future
         final ListenableFuture<ResponseEntity<ScheduleDTO[]>> future =
-                restTemplate.getForEntity("http://origin-www.svt.se/play4api/channel/{channel}/schedule", ScheduleDTO[].class, channel);
+                restTemplate.getForEntity("http://www.svt.se/play4api/channel/{channel}/schedule", ScheduleDTO[].class, channel);
 
         // Set the actions to perform when the SVT API either completes or fails
         future.addCallback(

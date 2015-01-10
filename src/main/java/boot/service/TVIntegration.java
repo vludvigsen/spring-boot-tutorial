@@ -17,7 +17,7 @@ public class TVIntegration {
         return new ObservableResult<ScheduleDTO[]>() {
             @Override
             public ScheduleDTO[] invoke() {
-                return restTemplate.getForObject("http://origin-www.svt.se/play4api/channel/{channel}/schedule", ScheduleDTO[].class, channel);
+                return restTemplate.getForObject("http://www.svt.se/play4api/channel/{channel}/schedule", ScheduleDTO[].class, channel);
             }
         };
     }
