@@ -4,7 +4,9 @@ import boot.dto.ScheduleDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class TVService {
@@ -16,8 +18,9 @@ public class TVService {
         return null;
     }
 
-    public ScheduleDTO[] getScheduledPrograms(String channel) {
-        return restTemplate.getForObject("http://www.svt.se/play4api/channel/{channel}/schedule", ScheduleDTO[].class, channel);
+    public List<ScheduleDTO> getScheduledPrograms(String channel) {
+        return Arrays.asList(restTemplate.getForObject("http://www.svt.se/play4api/channel/{channel}/schedule",
+                ScheduleDTO[].class, channel));
     }
 
 }
