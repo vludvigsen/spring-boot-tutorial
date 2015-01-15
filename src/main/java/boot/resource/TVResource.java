@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.Date;
+import java.util.List;
 
 @RestController
 public class TVResource {
@@ -17,7 +18,7 @@ public class TVResource {
     private TVService tvService;
 
     @RequestMapping("/schedule/{channel}")
-    public DeferredResult<ScheduleDTO[]> getSchedule(@PathVariable String channel) {
+    public DeferredResult<List<ScheduleDTO>> getSchedule(@PathVariable String channel) {
         return tvService.getScheduledPrograms(channel);
     }
 

@@ -26,13 +26,12 @@ public class TVService {
         final DeferredResult<ScheduleDTO> result = new DeferredResult<>();
 
         // Start a request for all scheduled programs on svt1 today
-        final DeferredResult<ScheduleDTO[]> svt1 = getScheduledProgramsHystrix("svt1");
+        final DeferredResult<List<ScheduleDTO>> svt1 = getScheduledProgramsHystrix("svt1");
 
         // When the svt1 schedule is ready, invoke the callback provided
         svt1.setResultHandler(svt1Result -> {
-            List<ScheduleDTO> svt1List = Arrays.asList((ScheduleDTO[]) svt1Result);
 
-            svt1List.stream()
+            ((List<ScheduleDTO>) svt1Result).stream()
                     // filter the list of programs to only include our title
                     .filter(program -> program.title.equalsIgnoreCase(showTitle))
                     // select the first one
@@ -50,9 +49,9 @@ public class TVService {
         return result;
     }
 
-    public DeferredResult<ScheduleDTO[]> getScheduledPrograms(String channel) {
+    public DeferredResult<List<ScheduleDTO>> getScheduledPrograms(String channel) {
         // Create a result to return immediately, and to set callbacks on
-        final DeferredResult<ScheduleDTO[]> deferredResult = new DeferredResult<>();
+        final DeferredResult<List<ScheduleDTO>> deferredResult = new DeferredResult<>();
 
         // Request the data from SVT API as a future
         final ListenableFuture<ResponseEntity<ScheduleDTO[]>> future =
@@ -60,19 +59,19 @@ public class TVService {
 
         // Set the actions to perform when the SVT API either completes or fails
         future.addCallback(
-                result -> deferredResult.setResult(result.getBody()),
+                result -> deferredResult.setResult(Arrays.asList(result.getBody())),
                 exception -> deferredResult.setErrorResult(exception.getMessage()));
 
         // return the result (to be populated by the callbacks above at a later time)
         return deferredResult;
     }
 
-    public DeferredResult<ScheduleDTO[]> getScheduledProgramsHystrix(String channel) {
+    public DeferredResult<List<ScheduleDTO>> getScheduledProgramsHystrix(String channel) {
         // Create a result to return immediately, and to set callbacks on
-        final DeferredResult<ScheduleDTO[]> deferredResult = new DeferredResult<>();
+        final DeferredResult<List<ScheduleDTO>> deferredResult = new DeferredResult<>();
 
         // Fetch an observable result of our Hystrix request
-        Observable<ScheduleDTO[]> observable = tvIntegration.getSchedule(channel);
+        Observable<List<ScheduleDTO>> observable = tvIntegration.getSchedule(channel);
 
         // subscribe to the observable and invoke the methods on next
         observable.subscribe(deferredResult::setResult,
